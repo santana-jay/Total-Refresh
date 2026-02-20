@@ -11,10 +11,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { format, addDays, startOfDay, isWeekend } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
-import { addDays, startOfDay } from "date-fns";
+
+const weekdaySlots = ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"];
+const weekendSlots = [
+  "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM",
+  "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
+  "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM",
+  "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
+];
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -22,6 +29,7 @@ const formSchema = z.object({
   phone: z.string().min(10, { message: "Please enter a valid phone number." }),
   serviceType: z.string().min(1, { message: "Please select a service." }),
   date: z.date({ required_error: "Please select a preferred date." }),
+  time: z.string().min(1, { message: "Please select a preferred time." }),
   details: z.string().optional(),
 });
 
@@ -40,6 +48,11 @@ export default function Book() {
     },
   });
 
+  const selectedDate = form.watch("date");
+  const timeSlots = selectedDate
+    ? isWeekend(selectedDate) ? weekendSlots : weekdaySlots
+    : [];
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
@@ -52,6 +65,7 @@ export default function Book() {
           phone: values.phone,
           serviceType: values.serviceType,
           preferredDate: format(values.date, "yyyy-MM-dd"),
+          preferredTime: values.time,
           details: values.details || "",
         }),
       });
@@ -103,7 +117,7 @@ export default function Book() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input placeholder="John Doe" data-testid="input-name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -117,7 +131,7 @@ export default function Book() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="(555) 123-4567" {...field} />
+                        <Input placeholder="(555) 123-4567" data-testid="input-phone" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -132,38 +146,38 @@ export default function Book() {
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="john@example.com" {...field} />
+                      <Input placeholder="john@example.com" data-testid="input-email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="serviceType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Service Needed</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a service" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-white border border-border shadow-lg">
-                          <SelectItem value="carpet">Carpet Cleaning</SelectItem>
-                          <SelectItem value="upholstery">Upholstery/Couch</SelectItem>
-                          <SelectItem value="rugs">Area Rugs</SelectItem>
-                          <SelectItem value="multiple">Multiple Services</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="serviceType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Service Needed</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-service">
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white border border-border shadow-lg">
+                        <SelectItem value="carpet">Carpet Cleaning</SelectItem>
+                        <SelectItem value="upholstery">Upholstery/Couch</SelectItem>
+                        <SelectItem value="rugs">Area Rugs</SelectItem>
+                        <SelectItem value="multiple">Multiple Services</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              <div className="grid md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="date"
@@ -179,6 +193,7 @@ export default function Book() {
                                 "w-full pl-3 text-left font-normal",
                                 !field.value && "text-muted-foreground"
                               )}
+                              data-testid="button-date"
                             >
                               {field.value ? (
                                 format(field.value, "PPP")
@@ -193,12 +208,54 @@ export default function Book() {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              form.setValue("time", "");
+                            }}
                             disabled={(date) => date < minDate}
                             initialFocus
                           />
                         </PopoverContent>
                       </Popover>
+                      <FormDescription>
+                        Must be at least 1 week in advance.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preferred Time</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={!selectedDate}
+                      >
+                        <FormControl>
+                          <SelectTrigger data-testid="select-time">
+                            <SelectValue placeholder={selectedDate ? "Select a time" : "Pick a date first"} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white border border-border shadow-lg">
+                          {timeSlots.map((slot) => (
+                            <SelectItem key={slot} value={slot}>
+                              {slot}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        {selectedDate
+                          ? isWeekend(selectedDate)
+                            ? "Weekends: 9 AM – 5 PM"
+                            : "Weekdays: 6 PM – 8 PM"
+                          : "Available times depend on the date."}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -215,6 +272,7 @@ export default function Book() {
                       <Textarea 
                         placeholder="Any specific stains, fabric types, or questions?" 
                         className="resize-none min-h-[100px]"
+                        data-testid="textarea-details"
                         {...field} 
                       />
                     </FormControl>
@@ -226,7 +284,7 @@ export default function Book() {
                 )}
               />
 
-              <Button type="submit" className="w-full text-lg py-6 rounded-xl bg-primary hover:bg-primary/90 text-white" disabled={isSubmitting}>
+              <Button type="submit" className="w-full text-lg py-6 rounded-xl bg-primary hover:bg-primary/90 text-white" disabled={isSubmitting} data-testid="button-submit">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

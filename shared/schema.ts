@@ -10,6 +10,7 @@ export const appointments = pgTable("appointments", {
   phone: text("phone").notNull(),
   serviceType: text("service_type").notNull(),
   preferredDate: text("preferred_date").notNull(),
+  preferredTime: text("preferred_time"),
   details: text("details"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
