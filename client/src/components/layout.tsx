@@ -113,13 +113,13 @@ export function Footer() {
               Reset the space, not just the surface. Deep extraction cleaning that brings back the freshness you can feel.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="https://www.instagram.com/totalrefreshnow?igsh=NGM0cDZyeXpseXp4&utm_source=qr" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Instagram size={20} />
               </a>
               <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="mailto:info@totalrefreshnow.com" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -144,7 +144,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={16} />
-                <span>hello@totalrefresh.com</span>
+                <span>hello@totalrefreshnow.com</span>
               </li>
             </ul>
           </div>
