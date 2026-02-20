@@ -6,6 +6,9 @@ import { desc, eq } from "drizzle-orm";
 export interface IStorage {
   createAppointment(appointment: InsertAppointment): Promise<Appointment>;
   getAppointments(): Promise<Appointment[]>;
+  getAppointment(id: number): Promise<Appointment | undefined>;
+  updateAppointment(id: number, data: Partial<InsertAppointment>): Promise<Appointment | undefined>;
+  deleteAppointment(id: number): Promise<boolean>;
   getAdminByUsername(username: string): Promise<AdminUser | undefined>;
   createAdmin(username: string, passwordHash: string): Promise<AdminUser>;
   updateAdminPassword(id: number, passwordHash: string): Promise<void>;
@@ -28,6 +31,21 @@ export class DatabaseStorage implements IStorage {
 
   async getAppointments(): Promise<Appointment[]> {
     return db.select().from(appointments).orderBy(desc(appointments.createdAt));
+  }
+
+  async getAppointment(id: number): Promise<Appointment | undefined> {
+    const [result] = await db.select().from(appointments).where(eq(appointments.id, id));
+    return result;
+  }
+
+  async updateAppointment(id: number, data: Partial<InsertAppointment>): Promise<Appointment | undefined> {
+    const [result] = await db.update(appointments).set(data).where(eq(appointments.id, id)).returning();
+    return result;
+  }
+
+  async deleteAppointment(id: number): Promise<boolean> {
+    const result = await db.delete(appointments).where(eq(appointments.id, id)).returning();
+    return result.length > 0;
   }
 
   async getAdminByUsername(username: string): Promise<AdminUser | undefined> {

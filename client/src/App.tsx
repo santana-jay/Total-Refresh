@@ -21,7 +21,7 @@ function Router() {
         <Route path="/services" component={Services} />
         <Route path="/contact" component={Contact} />
         <Route path="/about" component={About} />
-        <Route path="/admin" component={Admin} />
+        <Route path="/superadminmothafucka" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
