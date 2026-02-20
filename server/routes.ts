@@ -4,11 +4,128 @@ import { storage } from "./storage";
 import { insertAppointmentSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+
+const SALT_ROUNDS = 10;
+
+async function seedAdmin() {
+  const existing = await storage.getAdminByUsername("admin");
+  if (!existing) {
+    const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+    if (!defaultPassword) {
+      console.warn("No ADMIN_DEFAULT_PASSWORD set. Skipping admin seed.");
+      return;
+    }
+    const hash = await bcrypt.hash(defaultPassword, SALT_ROUNDS);
+    await storage.createAdmin("admin", hash);
+    console.log("Default admin account created.");
+  }
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  await seedAdmin();
+
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { password } = req.body;
+      if (!password) {
+        return res.status(400).json({ message: "Password is required." });
+      }
+      const admin = await storage.getAdminByUsername("admin");
+      if (!admin) {
+        return res.status(401).json({ message: "Invalid credentials." });
+      }
+      const valid = await bcrypt.compare(password, admin.passwordHash);
+      if (!valid) {
+        return res.status(401).json({ message: "Invalid password." });
+      }
+      const token = crypto.randomBytes(32).toString("hex");
+      (app as any).__adminToken = token;
+      res.json({ token });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed." });
+    }
+  });
+
+  function requireAuth(req: any, res: any, next: any) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.replace("Bearer ", "");
+    if (!token || token !== (app as any).__adminToken) {
+      return res.status(401).json({ message: "Unauthorized." });
+    }
+    next();
+  }
+
+  app.post("/api/admin/change-password", requireAuth, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current and new passwords are required." });
+      }
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters." });
+      }
+      const admin = await storage.getAdminByUsername("admin");
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found." });
+      }
+      const valid = await bcrypt.compare(currentPassword, admin.passwordHash);
+      if (!valid) {
+        return res.status(401).json({ message: "Current password is incorrect." });
+      }
+      const hash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+      await storage.updateAdminPassword(admin.id, hash);
+      res.json({ message: "Password updated successfully." });
+    } catch (error) {
+      console.error("Change password error:", error);
+      res.status(500).json({ message: "Failed to change password." });
+    }
+  });
+
+  app.post("/api/admin/request-reset", async (req, res) => {
+    try {
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiry = new Date(Date.now() + 60 * 60 * 1000);
+      const found = await storage.setResetToken("admin", token, expiry);
+      if (!found) {
+        return res.json({ message: "If the account exists, a reset link has been generated." });
+      }
+      console.log(`\n=== PASSWORD RESET ===\nReset token: ${token}\nUse this at /admin?reset=${token}\nExpires in 1 hour.\n=====================\n`);
+      res.json({ message: "Reset token generated. Check the server console for the reset link." });
+    } catch (error) {
+      console.error("Reset request error:", error);
+      res.status(500).json({ message: "Failed to generate reset token." });
+    }
+  });
+
+  app.post("/api/admin/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required." });
+      }
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters." });
+      }
+      const admin = await storage.getAdminByResetToken(token);
+      if (!admin || !admin.resetTokenExpiry || admin.resetTokenExpiry < new Date()) {
+        return res.status(400).json({ message: "Invalid or expired reset token." });
+      }
+      const hash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+      await storage.updateAdminPassword(admin.id, hash);
+      await storage.clearResetToken(admin.id);
+      res.json({ message: "Password has been reset successfully." });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Failed to reset password." });
+    }
+  });
+
   app.post("/api/appointments", async (req, res) => {
     try {
       const data = insertAppointmentSchema.parse(req.body);
@@ -25,7 +142,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/appointments", async (_req, res) => {
+  app.get("/api/appointments", requireAuth, async (_req, res) => {
     try {
       const appointments = await storage.getAppointments();
       res.json(appointments);

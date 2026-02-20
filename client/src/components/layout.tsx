@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Phone, Instagram, Facebook, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoImage from "@assets/1_1771559729738.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,37 +33,30 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/">
-          <a className="text-2xl font-bold font-display tracking-tight text-primary flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-            </div>
-            TotalRefresh
-          </a>
+        <Link href="/" className="flex items-center">
+          <img src={logoImage} alt="TotalRefresh" className="h-10" />
         </Link>
 
-        {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <a
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  location === link.href ? "text-primary font-semibold" : "text-muted-foreground"
-                )}
-              >
-                {link.label}
-              </a>
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary",
+                location === link.href ? "text-primary font-semibold" : "text-muted-foreground"
+              )}
+            >
+              {link.label}
             </Link>
           ))}
           <Link href="/book">
-             <Button size="sm" className="rounded-full px-6 bg-primary text-white hover:bg-primary/90 cursor-pointer">
+            <Button size="sm" className="rounded-full px-6 bg-primary text-white hover:bg-primary/90 cursor-pointer">
               Book Appointment
             </Button>
           </Link>
         </div>
 
-        {/* Mobile Toggle */}
         <button
           className="md:hidden p-2 text-foreground"
           onClick={() => setIsOpen(!isOpen)}
@@ -71,24 +65,23 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Nav */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-border p-4 flex flex-col gap-4 shadow-lg animate-in slide-in-from-top-5">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href}>
-              <a
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "text-lg font-medium py-2 border-b border-border/50",
-                  location === link.href ? "text-primary" : "text-foreground"
-                )}
-              >
-                {link.label}
-              </a>
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsOpen(false)}
+              className={cn(
+                "text-lg font-medium py-2 border-b border-border/50",
+                location === link.href ? "text-primary" : "text-foreground"
+              )}
+            >
+              {link.label}
             </Link>
           ))}
-          <Link href="/book">
-            <Button className="w-full mt-2 rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer" onClick={() => setIsOpen(false)}>
+          <Link href="/book" onClick={() => setIsOpen(false)}>
+            <Button className="w-full mt-2 rounded-full bg-primary text-white hover:bg-primary/90 cursor-pointer">
               Book Appointment
             </Button>
           </Link>
@@ -104,10 +97,8 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/">
-              <a className="text-2xl font-bold font-display tracking-tight text-primary mb-4 block">
-                TotalRefresh
-              </a>
+            <Link href="/" className="mb-4 block">
+              <img src={logoImage} alt="TotalRefresh" className="h-10" />
             </Link>
             <p className="text-muted-foreground max-w-sm mb-6">
               Reset the space, not just the surface. Deep extraction cleaning that brings back the freshness you can feel.
@@ -119,7 +110,7 @@ export function Footer() {
               <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="mailto:info@totalrefreshnow.com?subject=Info Request" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="mailto:info@totalrefreshnow.com" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -128,10 +119,10 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Services</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/services"><a className="hover:text-primary">Carpet Cleaning</a></Link></li>
-              <li><Link href="/services"><a className="hover:text-primary">Upholstery Extraction</a></Link></li>
-              <li><Link href="/services"><a className="hover:text-primary">Area Rugs</a></Link></li>
-              <li><Link href="/services"><a className="hover:text-primary">Spot Treatment</a></Link></li>
+              <li><Link href="/services" className="hover:text-primary">Carpet Cleaning</Link></li>
+              <li><Link href="/services" className="hover:text-primary">Upholstery Extraction</Link></li>
+              <li><Link href="/services" className="hover:text-primary">Area Rugs</Link></li>
+              <li><Link href="/services" className="hover:text-primary">Spot Treatment</Link></li>
             </ul>
           </div>
           
