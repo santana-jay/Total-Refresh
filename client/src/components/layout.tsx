@@ -119,7 +119,7 @@ export function Footer() {
               <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="mailto:info@totalrefreshnow.com" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a href="mailto:info@totalrefreshnow.com?subject=Info Request" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -144,7 +144,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={16} />
-                <span>hello@totalrefreshnow.com</span>
+                <span>info@totalrefreshnow.com</span>
               </li>
             </ul>
           </div>

@@ -13,7 +13,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { addDays, startOfDay } from "date-fns";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -27,6 +28,7 @@ const formSchema = z.object({
 export default function Book() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const minDate = useMemo(() => addDays(startOfDay(new Date()), 7), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -150,7 +152,7 @@ export default function Book() {
                             <SelectValue placeholder="Select a service" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-white border border-border shadow-lg">
                           <SelectItem value="carpet">Carpet Cleaning</SelectItem>
                           <SelectItem value="upholstery">Upholstery/Couch</SelectItem>
                           <SelectItem value="rugs">Area Rugs</SelectItem>
@@ -192,9 +194,7 @@ export default function Book() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date() || date < new Date("1900-01-01")
-                            }
+                            disabled={(date) => date < minDate}
                             initialFocus
                           />
                         </PopoverContent>
