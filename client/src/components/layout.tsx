@@ -33,8 +33,13 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-          <img src={logoImage} alt="TotalRefresh" className="h-10" />
+        <Link href="/" className="relative flex items-center w-[71px] h-[50px] overflow-hidden">
+          <img
+            alt="TotalRefresh"
+            className="absolute h-[301.76%] left-[-20.77%] max-w-none top-[-88.6%] w-[140.85%]"
+            style={{ mixBlendMode: 'multiply' }}
+            src={logoImage}
+          />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -97,8 +102,13 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="mb-4 block">
-              <img src={logoImage} alt="TotalRefresh" className="h-10" />
+            <Link href="/" className="relative mb-4 block w-[71px] h-[50px] overflow-hidden">
+              <img
+                alt="TotalRefresh"
+                className="absolute h-[301.76%] left-[-20.77%] max-w-none top-[-88.6%] w-[140.85%]"
+                style={{ mixBlendMode: 'multiply' }}
+                src={logoImage}
+              />
             </Link>
             <p className="text-muted-foreground max-w-sm mb-6">
               Reset the space, not just the surface. Deep extraction cleaning that brings back the freshness you can feel.

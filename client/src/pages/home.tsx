@@ -27,10 +27,10 @@ export default function Home() {
             className="max-w-xl"
           >
             <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
-              Total Refresh Surface Care
+              Total Refresh
             </span>
             <h1 className="text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-6 text-foreground">
-              Reset the space, <br/>
+              Refresh the space, <br/>
               <span className="text-primary">not just the surface.</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
