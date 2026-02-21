@@ -7,9 +7,7 @@ export default function About() {
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-3xl mx-auto">
           <span className="text-primary font-bold tracking-wider text-sm uppercase mb-4 block">About Us</span>
-          <h1 className="text-4xl md:text-6xl font-display font-bold mb-8 text-balance">
-            We believe that a truly clean home feels different.
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-display font-bold mb-8 text-balance">Two brothers, an older straight brother and a younger GAY brother because we believe in inclusion for all! We also believe that a truly clean home feels different.</h1>
           <p className="text-xl text-muted-foreground leading-relaxed mb-12">
             Total Refresh Surface Care was founded on a simple observation: most cleaning just skims the surface. We wanted to go deeper.
           </p>
@@ -56,7 +54,6 @@ export default function About() {
           </div>
         </div>
       </div>
-      
       <div className="text-center pb-20">
           <Link href="/book">
             <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 cursor-pointer">
