@@ -26,9 +26,6 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="max-w-xl"
           >
-            <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
-              Total Refresh
-            </span>
             <h1 className="text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-6 text-foreground">
               Refresh the space, <br/>
               <span className="text-primary">not just the surface.</span>
