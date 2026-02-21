@@ -175,8 +175,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} TotalRefresh Surface Care. All rights
-          reserved.
+          © {new Date().getFullYear()} Total Refresh. All rights reserved.
         </div>
       </div>
     </footer>
