@@ -14,7 +14,6 @@ export default function Contact() {
           </p>
         </div>
       </div>
-
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="grid md:grid-cols-2 gap-12">
           <div>
@@ -43,9 +42,7 @@ export default function Contact() {
                   <div>
                     <h3 className="font-bold mb-1">Email</h3>
                     <p className="text-muted-foreground mb-2">Drop us a line anytime.</p>
-                    <a href="mailto:hello@totalrefresh.com" className="text-lg font-semibold hover:text-primary transition-colors">
-                      hello@totalrefresh.com
-                    </a>
+                    <a href="mailto:hello@totalrefresh.com" className="text-lg font-semibold hover:text-primary transition-colors">info@totalrefresh.com</a>
                   </div>
                 </CardContent>
               </Card>
