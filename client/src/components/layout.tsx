@@ -29,7 +29,9 @@ export function Navbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-        scrolled ? "bg-white/90 backdrop-blur-md shadow-sm border-border/50 py-3" : "bg-transparent py-5"
+        scrolled
+          ? "bg-white/90 backdrop-blur-md shadow-sm border-border/50 py-3"
+          : "bg-transparent py-5",
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
@@ -44,14 +46,19 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "text-sm font-medium transition-colors hover:text-primary",
-                location === link.href ? "text-primary font-semibold" : "text-muted-foreground"
+                location === link.href
+                  ? "text-primary font-semibold"
+                  : "text-muted-foreground",
               )}
             >
               {link.label}
             </Link>
           ))}
           <Link href="/book">
-            <Button size="sm" className="rounded-full px-6 bg-primary text-white hover:bg-primary/90 cursor-pointer">
+            <Button
+              size="sm"
+              className="rounded-full px-6 bg-primary text-white hover:bg-primary/90 cursor-pointer"
+            >
               Book Appointment
             </Button>
           </Link>
@@ -74,7 +81,7 @@ export function Navbar() {
               onClick={() => setIsOpen(false)}
               className={cn(
                 "text-lg font-medium py-2 border-b border-border/50",
-                location === link.href ? "text-primary" : "text-foreground"
+                location === link.href ? "text-primary" : "text-foreground",
               )}
             >
               {link.label}
@@ -101,31 +108,57 @@ export function Footer() {
               <img src={logoImage} alt="TotalRefresh" className="h-12" />
             </Link>
             <p className="text-muted-foreground max-w-sm mb-6">
-              Reset the space, not just the surface. Deep extraction cleaning that brings back the freshness you can feel.
+              Reset the space, not just the surface. Deep extraction cleaning
+              that brings back the freshness you can feel.
             </p>
             <div className="flex gap-4">
-              <a href="https://www.instagram.com/totalrefreshnow?igsh=NGM0cDZyeXpseXp4&utm_source=qr" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a
+                href="https://www.instagram.com/totalrefreshnow?igsh=NGM0cDZyeXpseXp4&utm_source=qr"
+                className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Instagram size={20} />
               </a>
-              <a href="#" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a
+                href="#"
+                className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Facebook size={20} />
               </a>
-              <a href="mailto:info@totalrefreshnow.com" className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors">
+              <a
+                href="mailto:info@totalrefreshnow.com"
+                className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+              >
                 <Mail size={20} />
               </a>
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Services</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/services" className="hover:text-primary">Carpet Cleaning</Link></li>
-              <li><Link href="/services" className="hover:text-primary">Upholstery Extraction</Link></li>
-              <li><Link href="/services" className="hover:text-primary">Area Rugs</Link></li>
-              <li><Link href="/services" className="hover:text-primary">Spot Treatment</Link></li>
+              <li>
+                <Link href="/services" className="hover:text-primary">
+                  Carpet Cleaning
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-primary">
+                  Upholstery Extraction
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-primary">
+                  Area Rugs
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="hover:text-primary">
+                  Spot Treatment
+                </Link>
+              </li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Contact</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -140,9 +173,10 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} TotalRefresh Surface Care. All rights reserved.
+          © {new Date().getFullYear()} TotalRefresh Surface Care. All rights
+          reserved.
         </div>
       </div>
     </footer>
@@ -153,9 +187,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background">
       <Navbar />
-      <main className="flex-grow pt-20">
-        {children}
-      </main>
+      <main className="flex-grow pt-20">{children}</main>
       <Footer />
     </div>
   );
