@@ -49,7 +49,7 @@ export default function Services() {
         </div>
 
         {/* Upholstery Pricing */}
-        <section>
+        <section id="upholstery" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Upholstery Cleaning</h2>
           <p className="text-muted-foreground mb-8">Deep extraction for sofas, chairs, and more. Starting ranges below.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -74,7 +74,7 @@ export default function Services() {
         </section>
 
         {/* Carpet Extraction */}
-        <section>
+        <section id="carpet" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Carpet Extraction</h2>
           <p className="text-muted-foreground mb-8">Wall-to-wall carpet deep cleaning. Pricing by area type.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -95,7 +95,7 @@ export default function Services() {
         </section>
 
         {/* Area Rugs */}
-        <section>
+        <section id="area-rugs" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Area Rugs</h2>
           <p className="text-muted-foreground mb-8">In-home cleaning for synthetic rugs. Wool, silk, and antique rugs are referred to a specialist.</p>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -119,7 +119,7 @@ export default function Services() {
         </section>
 
         {/* Add-ons */}
-        <section>
+        <section id="spot-treatment" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2 flex items-center gap-3">
             <Sparkles className="text-primary" size={28} />
             Add-Ons

@@ -137,24 +137,24 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-foreground">Services</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="/services" className="hover:text-primary">
+                <a href="/services#carpet" className="hover:text-primary">
                   Carpet Cleaning
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/services" className="hover:text-primary">
+                <a href="/services#upholstery" className="hover:text-primary">
                   Upholstery Extraction
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/services" className="hover:text-primary">
+                <a href="/services#area-rugs" className="hover:text-primary">
                   Area Rugs
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/services" className="hover:text-primary">
+                <a href="/services#spot-treatment" className="hover:text-primary">
                   Spot Treatment
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
