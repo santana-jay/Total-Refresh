@@ -8,9 +8,7 @@ export default function About() {
         <div className="max-w-3xl mx-auto">
           <span className="text-primary font-bold tracking-wider text-sm uppercase mb-4 block">About Us</span>
           <h1 className="text-4xl md:text-6xl font-display font-bold mb-8 text-balance">We believe that a truly clean home feels different.</h1>
-          <p className="text-xl text-muted-foreground leading-relaxed mb-12">
-            Total Refresh Surface Care was founded on a simple observation: most cleaning just skims the surface. We wanted to go deeper.
-          </p>
+          <p className="text-xl text-muted-foreground leading-relaxed mb-12">Total Refresh was founded on a simple observation: most cleaning just skims the surface. We wanted to go deeper.</p>
         </div>
 
         <div className="aspect-video w-full bg-slate-100 rounded-3xl overflow-hidden mb-16 relative">
