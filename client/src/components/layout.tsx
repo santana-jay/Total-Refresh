@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Phone, Instagram, Facebook, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoImage from "@assets/TR_Icon_1771651745444.png";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,11 +33,8 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold font-display tracking-tight text-primary flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-          </div>
-          TotalRefresh
+        <Link href="/" className="flex items-center">
+          <img src={logoImage} alt="TotalRefresh" className="h-12" />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -99,8 +97,8 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="text-2xl font-bold font-display tracking-tight text-primary mb-4 block">
-              TotalRefresh
+            <Link href="/" className="mb-4 block">
+              <img src={logoImage} alt="TotalRefresh" className="h-12" />
             </Link>
             <p className="text-muted-foreground max-w-sm mb-6">
               Reset the space, not just the surface. Deep extraction cleaning that brings back the freshness you can feel.
