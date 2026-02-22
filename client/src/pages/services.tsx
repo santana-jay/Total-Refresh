@@ -1,3 +1,19 @@
+// =============================================================================
+// SERVICES & PRICING PAGE (client/src/pages/services.tsx)
+// =============================================================================
+// Displays all services with transparent pricing. Sections:
+//   1. Service Area / Trip Minimum / Dry Time info cards
+//   2. Upholstery Cleaning — per-item pricing (dining chairs to sectionals)
+//   3. Carpet Extraction — per-area pricing (room, hallway, stairs, closet)
+//   4. Area Rugs — by size (small, medium, large)
+//   5. Add-Ons — pet treatment, spot treatment, deodorizer, protector, rush fee
+//   6. Policy Note — pricing disclaimer
+//   7. CTA — "Book an Appointment" button
+//
+// Each section has an id (e.g., #carpet, #upholstery) so footer links can
+// scroll directly to the relevant pricing.
+// =============================================================================
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -6,6 +22,7 @@ import { MapPin, Clock, AlertCircle, Sparkles } from "lucide-react";
 export default function Services() {
   return (
     <div className="pb-20">
+      {/* Page header */}
       <div className="bg-slate-50 py-20 mb-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-display font-bold mb-6">Our Services & Pricing</h1>
@@ -17,7 +34,7 @@ export default function Services() {
 
       <div className="container mx-auto px-4 max-w-5xl space-y-16">
 
-        {/* Service Area & Policies */}
+        {/* ===== SERVICE AREA & POLICY CARDS ===== */}
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-6 flex items-start gap-4">
@@ -48,7 +65,7 @@ export default function Services() {
           </Card>
         </div>
 
-        {/* Upholstery Pricing */}
+        {/* ===== UPHOLSTERY PRICING ===== */}
         <section id="upholstery" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Upholstery Cleaning</h2>
           <p className="text-muted-foreground mb-8">Deep extraction for sofas, chairs, and more. Starting ranges below.</p>
@@ -73,7 +90,7 @@ export default function Services() {
           </div>
         </section>
 
-        {/* Carpet Extraction */}
+        {/* ===== CARPET EXTRACTION ===== */}
         <section id="carpet" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Carpet Extraction</h2>
           <p className="text-muted-foreground mb-8">Wall-to-wall carpet deep cleaning. Pricing by area type.</p>
@@ -94,7 +111,7 @@ export default function Services() {
           </div>
         </section>
 
-        {/* Area Rugs */}
+        {/* ===== AREA RUGS ===== */}
         <section id="area-rugs" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2">Area Rugs</h2>
           <p className="text-muted-foreground mb-8">In-home cleaning for synthetic rugs. Wool, silk, and antique rugs are referred to a specialist.</p>
@@ -118,7 +135,7 @@ export default function Services() {
           </p>
         </section>
 
-        {/* Add-ons */}
+        {/* ===== ADD-ONS ===== */}
         <section id="spot-treatment" className="scroll-mt-24">
           <h2 className="text-3xl font-display font-bold mb-2 flex items-center gap-3">
             <Sparkles className="text-primary" size={28} />
@@ -148,14 +165,14 @@ export default function Services() {
           </Card>
         </section>
 
-        {/* Policy Note */}
+        {/* ===== POLICY NOTE ===== */}
         <div className="bg-slate-50 rounded-2xl p-8 text-center">
           <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl mx-auto">
             Final pricing is confirmed after an inspection of the items to be cleaned. While we achieve excellent results, some stains may improve but not fully disappear. We'll always set honest expectations upfront.
           </p>
         </div>
 
-        {/* CTA */}
+        {/* ===== CTA ===== */}
         <div className="text-center pt-4">
           <h2 className="text-3xl font-display font-bold mb-4">Ready to get started?</h2>
           <p className="text-muted-foreground mb-8 max-w-lg mx-auto">

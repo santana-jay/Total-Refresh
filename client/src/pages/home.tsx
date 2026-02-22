@@ -1,3 +1,14 @@
+// =============================================================================
+// HOME PAGE (client/src/pages/home.tsx)
+// =============================================================================
+// The landing page for TotalRefresh. Sections (top to bottom):
+//   1. Hero — big headline, CTA buttons, background image with gradient overlay
+//   2. Problem Statement — emotional copy about why homes stop feeling fresh
+//   3. Why Extraction — three feature highlights with icons
+//   4. What We Clean — grid of service cards (couches, rugs, carpet, etc.)
+//   5. CTA Banner — full-width teal call-to-action with "Book an Appointment"
+// =============================================================================
+
 import { motion } from "framer-motion";
 import { ArrowRight, Droplets, Sparkles, RefreshCw, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,9 +18,10 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function Home() {
   return (
     <div className="flex flex-col gap-20 pb-20">
-      {/* Hero Section */}
+
+      {/* ===== HERO SECTION ===== */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background Image with Overlay */}
+        {/* Background image with a left-to-right gradient overlay */}
         <div className="absolute inset-0 z-0">
           <img 
             src="/images/hero-clean.png" 
@@ -20,6 +32,7 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+          {/* Animated headline and CTA buttons */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -50,25 +63,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The Problem Statement */}
+      {/* ===== PROBLEM STATEMENT ===== */}
       <section className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-            There’s a moment every home hits.
+            There's a moment every home hits.
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-            The rug that never looks quite the same. The couch that feels “lived in” no matter how much you tidy. 
-            The room that’s clean… but doesn’t feel fresh. It’s not because you’re not cleaning. 
-            It’s because soft surfaces hold onto life.
+            The rug that never looks quite the same. The couch that feels "lived in" no matter how much you tidy. 
+            The room that's clean… but doesn't feel fresh. It's not because you're not cleaning. 
+            It's because soft surfaces hold onto life.
           </p>
           <div className="h-1 w-20 bg-primary/30 mx-auto rounded-full" />
         </div>
       </section>
 
-      {/* Why Extraction? */}
+      {/* ===== WHY EXTRACTION ===== */}
       <section className="bg-slate-50 py-20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center">
+            {/* Left column: image with floating "Did you know?" card */}
             <div className="order-2 md:order-1 relative">
               <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl">
                 <img 
@@ -83,6 +97,7 @@ export default function Home() {
               </div>
             </div>
             
+            {/* Right column: three feature highlights */}
             <div className="order-1 md:order-2">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-8">Why Extraction?</h2>
               <div className="space-y-8">
@@ -102,7 +117,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold mb-2">Refreshes the feel</h3>
-                    <p className="text-muted-foreground">It’s not just about how it looks. We restore the texture and softness of your fabrics.</p>
+                    <p className="text-muted-foreground">It's not just about how it looks. We restore the texture and softness of your fabrics.</p>
                   </div>
                 </div>
                 
@@ -121,13 +136,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What We Clean */}
+      {/* ===== WHAT WE CLEAN ===== */}
       <section className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">What We Clean</h2>
           <p className="text-muted-foreground">Comprehensive care for your home's soft surfaces.</p>
         </div>
         
+        {/* Six service cards in a responsive grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { title: "Couches & Sectionals", desc: "Revitalize your main gathering space.", icon: "🛋️" },
@@ -148,9 +164,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ===== CALL TO ACTION BANNER ===== */}
       <section className="container mx-auto px-4 mb-20">
         <div className="bg-primary rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden">
+          {/* Subtle grid pattern overlay */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -164,10 +181,10 @@ export default function Home() {
           
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-display font-bold mb-6">
-              If it’s been a while, it’s time for extraction.
+              If it's been a while, it's time for extraction.
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-8">
-              Let’s make your home feel new again. Book your appointment today.
+              Let's make your home feel new again. Book your appointment today.
             </p>
             <Link href="/book">
               <Button size="lg" className="rounded-full bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 font-bold shadow-xl cursor-pointer">

@@ -1,3 +1,21 @@
+// =============================================================================
+// LAYOUT COMPONENTS (client/src/components/layout.tsx)
+// =============================================================================
+// Contains the Navbar, Footer, and Layout wrapper used on every page.
+//
+// Navbar:
+//   - Fixed at the top; transparent on scroll-top, white with blur on scroll
+//   - Desktop: horizontal nav links + "Book Appointment" CTA
+//   - Mobile: hamburger menu that slides down
+//
+// Footer:
+//   - Brand logo, tagline, social links, service shortcuts, contact info
+//   - Facebook link goes to /coming-soon (page not yet set up)
+//
+// Layout:
+//   - Wraps Navbar + page content + Footer into a full-height flex column
+// =============================================================================
+
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Menu, X, Phone, Instagram, Facebook, Mail } from "lucide-react";
@@ -5,11 +23,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoImage from "@assets/TR_Icon_1771651745444.png";
 
+// =============================================================================
+// Navbar — sticky top navigation bar
+// =============================================================================
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const [scrolled, setScrolled] = useState(false);
 
+  // Track whether the user has scrolled past 20px to swap background styles
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -18,6 +40,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Navigation links shown in both desktop and mobile menus
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
@@ -35,10 +58,12 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
+        {/* Logo — links back to home */}
         <Link href="/" className="flex items-center">
           <img src={logoImage} alt="TotalRefresh" className="h-12" />
         </Link>
 
+        {/* Desktop navigation links */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
@@ -64,6 +89,7 @@ export function Navbar() {
           </Link>
         </div>
 
+        {/* Mobile hamburger toggle */}
         <button
           className="md:hidden p-2 text-foreground"
           onClick={() => setIsOpen(!isOpen)}
@@ -72,6 +98,7 @@ export function Navbar() {
         </button>
       </div>
 
+      {/* Mobile slide-down menu */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-border p-4 flex flex-col gap-4 shadow-lg animate-in slide-in-from-top-5">
           {navLinks.map((link) => (
@@ -98,11 +125,15 @@ export function Navbar() {
   );
 }
 
+// =============================================================================
+// Footer — site-wide footer with brand info, service links, and contact details
+// =============================================================================
 export function Footer() {
   return (
     <footer className="bg-slate-50 border-t border-border py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8 mb-12">
+          {/* Brand column — logo, tagline, social icons */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="mb-4 block">
               <img src={logoImage} alt="TotalRefresh" className="h-12" />
@@ -118,12 +149,13 @@ export function Footer() {
               >
                 <Instagram size={20} />
               </a>
-              <a
-                href="#"
+              {/* Facebook page coming soon — links to placeholder page */}
+              <Link
+                href="/coming-soon"
                 className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
               >
                 <Facebook size={20} />
-              </a>
+              </Link>
               <a
                 href="mailto:info@totalrefreshnow.com"
                 className="p-2 rounded-full bg-white border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
@@ -133,6 +165,7 @@ export function Footer() {
             </div>
           </div>
 
+          {/* Services quick links — scroll to sections on the Services page */}
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Services</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -159,6 +192,7 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Contact info */}
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Contact</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -174,6 +208,7 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Copyright bar */}
         <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Total Refresh. All rights reserved.
         </div>
@@ -182,6 +217,9 @@ export function Footer() {
   );
 }
 
+// =============================================================================
+// Layout — wraps every page in Navbar + main content area + Footer
+// =============================================================================
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background">

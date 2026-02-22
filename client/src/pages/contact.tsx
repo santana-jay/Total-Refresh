@@ -1,3 +1,12 @@
+// =============================================================================
+// CONTACT PAGE (client/src/pages/contact.tsx)
+// =============================================================================
+// Shows contact information and encourages visitors to book online.
+// Two-column layout:
+//   Left: Phone card, email card, social media buttons
+//   Right: "Ready to book?" panel with a CTA button linking to /book
+// =============================================================================
+
 import { Mail, Phone, MapPin, Instagram, Facebook } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +15,7 @@ import { Link } from "wouter";
 export default function Contact() {
   return (
     <div className="pb-20">
+      {/* Page header */}
       <div className="bg-slate-50 py-20 mb-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-display font-bold mb-6">Get in Touch</h1>
@@ -14,11 +24,14 @@ export default function Contact() {
           </p>
         </div>
       </div>
+
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="grid md:grid-cols-2 gap-12">
+          {/* Left column: contact info cards and social links */}
           <div>
             <h2 className="text-2xl font-display font-bold mb-6">Contact Information</h2>
             <div className="space-y-6">
+              {/* Phone card */}
               <Card className="border-border/50">
                 <CardContent className="p-6 flex items-start gap-4">
                   <div className="p-3 bg-primary/10 rounded-full text-primary">
@@ -34,6 +47,7 @@ export default function Contact() {
                 </CardContent>
               </Card>
 
+              {/* Email card */}
               <Card className="border-border/50">
                 <CardContent className="p-6 flex items-start gap-4">
                   <div className="p-3 bg-primary/10 rounded-full text-primary">
@@ -42,25 +56,30 @@ export default function Contact() {
                   <div>
                     <h3 className="font-bold mb-1">Email</h3>
                     <p className="text-muted-foreground mb-2">Drop us a line anytime.</p>
-                    <a href="mailto:hello@totalrefresh.com" className="text-lg font-semibold hover:text-primary transition-colors">info@totalrefresh.com</a>
+                    <a href="mailto:hello@totalrefresh.com" className="text-lg font-semibold hover:text-primary transition-colors">info@totalrefreshnow.com</a>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* Social media buttons */}
               <div className="pt-6">
                 <h3 className="font-bold mb-4">Follow Us</h3>
                 <div className="flex gap-4">
                   <Button variant="outline" size="icon" className="rounded-full cursor-pointer">
                     <Instagram size={20} />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full cursor-pointer">
-                    <Facebook size={20} />
-                  </Button>
+                  {/* Facebook page coming soon */}
+                  <Link href="/coming-soon">
+                    <Button variant="outline" size="icon" className="rounded-full cursor-pointer">
+                      <Facebook size={20} />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Right column: booking CTA panel */}
           <div className="bg-primary/5 rounded-3xl p-8 md:p-12 flex flex-col justify-center text-center">
             <h2 className="text-3xl font-display font-bold mb-6">Ready to book?</h2>
             <p className="text-muted-foreground mb-8 text-lg">

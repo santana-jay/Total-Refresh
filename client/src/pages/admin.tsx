@@ -1,3 +1,23 @@
+// =============================================================================
+// ADMIN PAGE (client/src/pages/admin.tsx)
+// =============================================================================
+// Password-protected admin panel at /superadminmothafucka
+//
+// Flow:
+//   1. If a ?reset=<token> query param is present, show ResetPasswordForm
+//   2. If not logged in, show LoginForm (username + password)
+//   3. If logged in, show AppointmentsList (view, edit, delete appointments)
+//
+// Components in this file:
+//   - LoginForm — handles admin login and "forgot password" flow
+//   - ResetPasswordForm — lets admin set a new password using a reset token
+//   - ChangePasswordModal — modal to change password while logged in
+//   - EditAppointmentModal — modal to edit appointment details
+//   - DeleteConfirmModal — confirmation dialog before deleting an appointment
+//   - AppointmentsList — main dashboard showing all appointment requests
+//   - Admin (default export) — orchestrates which view to show
+// =============================================================================
+
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import type { Appointment } from "@shared/schema";
 
+// Human-readable labels for the service type codes stored in the database
 const serviceLabels: Record<string, string> = {
   carpet: "Carpet Cleaning",
   upholstery: "Upholstery/Couch",
@@ -18,6 +39,11 @@ const serviceLabels: Record<string, string> = {
   multiple: "Multiple Services",
 };
 
+// =============================================================================
+// LoginForm — username + password login for the admin panel
+// Also includes a "Forgot password?" flow that generates a reset token
+// (logged to the server console).
+// =============================================================================
 function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +54,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
   const [resetUsername, setResetUsername] = useState("");
   const { toast } = useToast();
 
+  // Authenticate with the server and store the returned bearer token
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -51,6 +78,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
     }
   }
 
+  // Request a password reset token (it gets printed in the server console)
   async function handleForgotPassword() {
     try {
       const res = await fetch("/api/admin/request-reset", {
@@ -95,6 +123,8 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Log In"}
             </Button>
           </form>
+
+          {/* Forgot password section — toggles between link, form, and confirmation */}
           <div className="mt-4 text-center">
             {!showForgot ? (
               <button
@@ -130,6 +160,10 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
   );
 }
 
+// =============================================================================
+// ResetPasswordForm — shown when the URL has ?reset=<token>
+// Lets the admin set a new password using the token from the server console.
+// =============================================================================
 function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => void }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -199,6 +233,10 @@ function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => voi
   );
 }
 
+// =============================================================================
+// ChangePasswordModal — overlay modal for changing password while logged in.
+// Requires current password + new password (min 8 chars).
+// =============================================================================
 function ChangePasswordModal({ token, onClose }: { token: string; onClose: () => void }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -266,6 +304,10 @@ function ChangePasswordModal({ token, onClose }: { token: string; onClose: () =>
   );
 }
 
+// =============================================================================
+// EditAppointmentModal — overlay modal for editing an existing appointment.
+// Pre-filled with the appointment's current data.
+// =============================================================================
 function EditAppointmentModal({
   appointment,
   token,
@@ -288,6 +330,7 @@ function EditAppointmentModal({
   const [error, setError] = useState("");
   const { toast } = useToast();
 
+  // Send PUT request to update the appointment
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -383,6 +426,10 @@ function EditAppointmentModal({
   );
 }
 
+// =============================================================================
+// DeleteConfirmModal — asks for confirmation before permanently deleting
+// an appointment request.
+// =============================================================================
 function DeleteConfirmModal({
   appointment,
   token,
@@ -443,11 +490,17 @@ function DeleteConfirmModal({
   );
 }
 
+// =============================================================================
+// Admin (default export) — top-level controller for the admin page.
+// Decides which view to render based on login state and URL params.
+// =============================================================================
 export default function Admin() {
+  // Persist the auth token in sessionStorage so it survives page refreshes
   const [token, setToken] = useState<string | null>(() => sessionStorage.getItem("adminToken"));
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [, setLocation] = useLocation();
 
+  // Check for a password reset token in the URL query string
   const urlParams = new URLSearchParams(window.location.search);
   const resetToken = urlParams.get("reset");
 
@@ -461,19 +514,23 @@ export default function Admin() {
     setToken(null);
   }
 
+  // After resetting password, strip the ?reset param from the URL
   function handleResetDone() {
     window.history.replaceState({}, "", "/superadminmothafucka");
     setLocation("/superadminmothafucka");
   }
 
+  // Show the reset form if a reset token is in the URL
   if (resetToken) {
     return <ResetPasswordForm token={resetToken} onDone={handleResetDone} />;
   }
 
+  // Show login form if not authenticated
   if (!token) {
     return <LoginForm onLogin={handleLogin} />;
   }
 
+  // Show the main appointments dashboard
   return (
     <AppointmentsList
       token={token}
@@ -485,6 +542,11 @@ export default function Admin() {
   );
 }
 
+// =============================================================================
+// AppointmentsList — the main admin dashboard.
+// Fetches all appointments from the API and displays them as cards.
+// Provides edit and delete actions for each appointment.
+// =============================================================================
 function AppointmentsList({
   token,
   onLogout,
@@ -502,12 +564,14 @@ function AppointmentsList({
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [deletingAppointment, setDeletingAppointment] = useState<Appointment | null>(null);
 
+  // Fetch appointments from the API with the auth token
   const { data: appointments, isLoading, error } = useQuery<Appointment[]>({
     queryKey: ["/api/appointments"],
     queryFn: async () => {
       const res = await fetch("/api/appointments", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      // If unauthorized, clear session and force re-login
       if (res.status === 401) {
         sessionStorage.removeItem("adminToken");
         window.location.reload();
@@ -518,12 +582,14 @@ function AppointmentsList({
     },
   });
 
+  // Refresh the appointments list after an edit or delete
   function refreshList() {
     queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
   }
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
+      {/* Header with title and action buttons */}
       <div className="flex items-start justify-between mb-10">
         <div>
           <h1 className="text-4xl font-display font-bold mb-2">Appointment Requests</h1>
@@ -541,6 +607,7 @@ function AppointmentsList({
         </div>
       </div>
 
+      {/* Modals — rendered when their state is active */}
       {showChangePassword && <ChangePasswordModal token={token} onClose={onCloseChangePassword} />}
       {editingAppointment && (
         <EditAppointmentModal
@@ -559,12 +626,14 @@ function AppointmentsList({
         />
       )}
 
+      {/* Loading spinner */}
       {isLoading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
 
+      {/* Error state */}
       {error && (
         <Card className="border-destructive">
           <CardContent className="p-6 text-destructive">
@@ -573,6 +642,7 @@ function AppointmentsList({
         </Card>
       )}
 
+      {/* Empty state */}
       {appointments && appointments.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center text-muted-foreground">
@@ -581,12 +651,14 @@ function AppointmentsList({
         </Card>
       )}
 
+      {/* Appointment cards */}
       {appointments && appointments.length > 0 && (
         <div className="space-y-4">
           {appointments.map((apt) => (
             <Card key={apt.id} className="border-border/50 hover:border-primary/20 transition-colors" data-testid={`card-appointment-${apt.id}`}>
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                  {/* Appointment info */}
                   <div className="space-y-3 flex-1">
                     <div className="flex items-center gap-3 flex-wrap">
                       <h3 className="font-bold text-lg flex items-center gap-2">
@@ -625,6 +697,8 @@ function AppointmentsList({
                       </p>
                     )}
                   </div>
+
+                  {/* Actions column — timestamp + edit/delete buttons */}
                   <div className="flex flex-col items-end gap-2">
                     <div className="text-xs text-muted-foreground whitespace-nowrap">
                       {new Date(apt.createdAt).toLocaleDateString("en-US", {

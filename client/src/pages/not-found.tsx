@@ -1,3 +1,10 @@
+// =============================================================================
+// 404 NOT FOUND PAGE (client/src/pages/not-found.tsx)
+// =============================================================================
+// Shown when no route matches the current URL.
+// Displays a simple card with a 404 message.
+// =============================================================================
+
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 

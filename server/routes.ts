@@ -1,3 +1,19 @@
+// =============================================================================
+// API ROUTES (server/routes.ts)
+// =============================================================================
+// All backend API endpoints are registered here.
+//
+// Route groups:
+//   POST /api/admin/login           — authenticate admin user
+//   POST /api/admin/change-password — change password (requires auth)
+//   POST /api/admin/request-reset   — generate a password-reset token (logged to console)
+//   POST /api/admin/reset-password  — reset password using a token
+//   POST /api/appointments          — create a new appointment (public)
+//   GET  /api/appointments          — list all appointments (auth required)
+//   PUT  /api/appointments/:id      — update an appointment (auth required)
+//   DELETE /api/appointments/:id    — delete an appointment (auth required)
+// =============================================================================
+
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -7,8 +23,14 @@ import { fromZodError } from "zod-validation-error";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
+// Number of salt rounds for bcrypt password hashing
 const SALT_ROUNDS = 10;
 
+// -----------------------------------------------------------------------------
+// Seed the default admin account on first startup.
+// The password comes from the ADMIN_DEFAULT_PASSWORD environment variable.
+// If that variable is not set, no admin user is created automatically.
+// -----------------------------------------------------------------------------
 async function seedAdmin() {
   const existing = await storage.getAdminByUsername("admin");
   if (!existing) {
@@ -23,12 +45,20 @@ async function seedAdmin() {
   }
 }
 
+// =============================================================================
+// Register all API routes on the Express app
+// =============================================================================
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
   await seedAdmin();
 
+  // ---------------------------------------------------------------------------
+  // POST /api/admin/login
+  // Accepts { username, password } and returns a bearer token on success.
+  // The token is stored in memory on the server (app.__adminToken).
+  // ---------------------------------------------------------------------------
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { username, password } = req.body;
@@ -43,6 +73,7 @@ export async function registerRoutes(
       if (!valid) {
         return res.status(401).json({ message: "Invalid credentials." });
       }
+      // Generate a random token and store it in memory for session validation
       const token = crypto.randomBytes(32).toString("hex");
       (app as any).__adminToken = token;
       (app as any).__adminUsername = username;
@@ -53,6 +84,11 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // Auth Middleware
+  // Checks the Authorization header for the correct bearer token.
+  // Used on all admin-only routes (appointments list, edit, delete, etc.).
+  // ---------------------------------------------------------------------------
   function requireAuth(req: any, res: any, next: any) {
     const authHeader = req.headers.authorization;
     const token = authHeader?.replace("Bearer ", "");
@@ -62,6 +98,10 @@ export async function registerRoutes(
     next();
   }
 
+  // ---------------------------------------------------------------------------
+  // POST /api/admin/change-password
+  // Requires the current password and a new password (min 8 chars).
+  // ---------------------------------------------------------------------------
   app.post("/api/admin/change-password", requireAuth, async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
@@ -89,16 +129,23 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // POST /api/admin/request-reset
+  // Generates a one-time password reset token (valid for 1 hour) and logs it
+  // to the server console. Navigate to /superadminmothafucka?reset=<token>
+  // to use it.
+  // ---------------------------------------------------------------------------
   app.post("/api/admin/request-reset", async (req, res) => {
     try {
       const { username } = req.body;
       const targetUsername = username || "admin";
       const token = crypto.randomBytes(32).toString("hex");
-      const expiry = new Date(Date.now() + 60 * 60 * 1000);
+      const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
       const found = await storage.setResetToken(targetUsername, token, expiry);
       if (!found) {
         return res.json({ message: "If the account exists, a reset link has been generated." });
       }
+      // Log the token to the server console so the admin can use it
       console.log(`\n=== PASSWORD RESET ===\nUsername: ${targetUsername}\nReset token: ${token}\nUse this at /superadminmothafucka?reset=${token}\nExpires in 1 hour.\n=====================\n`);
       res.json({ message: "Reset token generated. Check the server console for the reset link." });
     } catch (error) {
@@ -107,6 +154,10 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // POST /api/admin/reset-password
+  // Accepts { token, newPassword } and resets the password if the token is valid.
+  // ---------------------------------------------------------------------------
   app.post("/api/admin/reset-password", async (req, res) => {
     try {
       const { token, newPassword } = req.body;
@@ -130,6 +181,10 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // POST /api/appointments  (PUBLIC — no auth required)
+  // Creates a new appointment request. Validates the body with Zod.
+  // ---------------------------------------------------------------------------
   app.post("/api/appointments", async (req, res) => {
     try {
       const data = insertAppointmentSchema.parse(req.body);
@@ -146,6 +201,10 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // GET /api/appointments  (AUTH REQUIRED)
+  // Returns all appointment requests, newest first.
+  // ---------------------------------------------------------------------------
   app.get("/api/appointments", requireAuth, async (_req, res) => {
     try {
       const appointments = await storage.getAppointments();
@@ -156,6 +215,10 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // PUT /api/appointments/:id  (AUTH REQUIRED)
+  // Updates an existing appointment with the fields provided in the body.
+  // ---------------------------------------------------------------------------
   app.put("/api/appointments/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -174,6 +237,10 @@ export async function registerRoutes(
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // DELETE /api/appointments/:id  (AUTH REQUIRED)
+  // Permanently removes an appointment request.
+  // ---------------------------------------------------------------------------
   app.delete("/api/appointments/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);

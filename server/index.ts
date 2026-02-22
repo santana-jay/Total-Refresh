@@ -1,3 +1,12 @@
+// =============================================================================
+// SERVER ENTRY POINT (server/index.ts)
+// =============================================================================
+// This is the main file that starts the Express server.
+// It sets up JSON body parsing, request logging for /api routes,
+// error handling, and then either serves the Vite dev server (development)
+// or the pre-built static files (production).
+// =============================================================================
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -6,12 +15,14 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+// Make the raw request body available (useful for webhook signature checks)
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
   }
 }
 
+// Parse JSON request bodies and store the raw buffer
 app.use(
   express.json({
     verify: (req, _res, buf) => {
@@ -20,8 +31,13 @@ app.use(
   }),
 );
 
+// Parse URL-encoded form data
 app.use(express.urlencoded({ extended: false }));
 
+// ---------------------------------------------------------------------------
+// Console logger — prints timestamped messages with a source label
+// Used throughout the server for structured logging.
+// ---------------------------------------------------------------------------
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -33,6 +49,11 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+// ---------------------------------------------------------------------------
+// Request logger middleware
+// Logs every /api request with its method, path, status code, and duration.
+// Also captures the JSON response body for debugging.
+// ---------------------------------------------------------------------------
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -59,9 +80,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// ---------------------------------------------------------------------------
+// Start the server
+// 1. Register all API routes
+// 2. Set up global error handler
+// 3. In development: start Vite dev server with hot-reload
+//    In production: serve pre-built static files from dist/public
+// 4. Listen on PORT (default 5000)
+// ---------------------------------------------------------------------------
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // Global error handler — catches unhandled errors in route handlers
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -75,9 +105,7 @@ app.use((req, res, next) => {
     return res.status(status).json({ message });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // Set up the frontend — Vite dev server or static file serving
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
@@ -85,10 +113,7 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
+  // Listen on the configured port (default 5000)
   const port = parseInt(process.env.PORT || "5000", 10);
   httpServer.listen(
     {

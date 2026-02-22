@@ -1,3 +1,17 @@
+// =============================================================================
+// BOOKING PAGE (client/src/pages/book.tsx)
+// =============================================================================
+// Appointment request form. Customers fill out their contact info, choose a
+// service, pick a date (at least 1 week in advance), and select a time slot.
+//
+// Time slots vary by day type:
+//   Weekdays: 6:00 PM – 7:30 PM (30-min increments)
+//   Weekends: 9:00 AM – 4:30 PM (30-min increments)
+//
+// On submit, the form POSTs to /api/appointments and shows a success toast.
+// Validation is handled by Zod + react-hook-form.
+// =============================================================================
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,7 +29,10 @@ import { format, addDays, startOfDay, isWeekend } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 
+// Available time slots for weekdays (after work hours)
 const weekdaySlots = ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"];
+
+// Available time slots for weekends (full day)
 const weekendSlots = [
   "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM",
   "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
@@ -23,6 +40,7 @@ const weekendSlots = [
   "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM",
 ];
 
+// Form validation schema — all required fields enforced here
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -36,6 +54,8 @@ const formSchema = z.object({
 export default function Book() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Earliest bookable date is 7 days from today
   const minDate = useMemo(() => addDays(startOfDay(new Date()), 7), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,11 +68,13 @@ export default function Book() {
     },
   });
 
+  // Watch the selected date so we can show the right time slots
   const selectedDate = form.watch("date");
   const timeSlots = selectedDate
     ? isWeekend(selectedDate) ? weekendSlots : weekdaySlots
     : [];
 
+  // Submit the appointment request to the API
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
@@ -93,6 +115,7 @@ export default function Book() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-2xl">
+      {/* Page header */}
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-display font-bold mb-4">Book an Appointment</h1>
         <p className="text-muted-foreground">
@@ -109,6 +132,7 @@ export default function Book() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               
+              {/* Name and Phone — side by side on desktop */}
               <div className="grid md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -139,6 +163,7 @@ export default function Book() {
                 />
               </div>
 
+              {/* Email */}
               <FormField
                 control={form.control}
                 name="email"
@@ -153,6 +178,7 @@ export default function Book() {
                 )}
               />
 
+              {/* Service type dropdown */}
               <FormField
                 control={form.control}
                 name="serviceType"
@@ -177,7 +203,9 @@ export default function Book() {
                 )}
               />
 
+              {/* Date and Time pickers — side by side */}
               <div className="grid md:grid-cols-2 gap-6">
+                {/* Date picker with calendar popover */}
                 <FormField
                   control={form.control}
                   name="date"
@@ -210,6 +238,7 @@ export default function Book() {
                             selected={field.value}
                             onSelect={(date) => {
                               field.onChange(date);
+                              // Reset time when date changes (different slots for weekday vs weekend)
                               form.setValue("time", "");
                             }}
                             disabled={(date) => date < minDate}
@@ -225,6 +254,7 @@ export default function Book() {
                   )}
                 />
 
+                {/* Time slot selector — shows different options based on weekday/weekend */}
                 <FormField
                   control={form.control}
                   name="time"
@@ -262,6 +292,7 @@ export default function Book() {
                 />
               </div>
 
+              {/* Optional details textarea */}
               <FormField
                 control={form.control}
                 name="details"
@@ -284,6 +315,7 @@ export default function Book() {
                 )}
               />
 
+              {/* Submit button with loading state */}
               <Button type="submit" className="w-full text-lg py-6 rounded-xl bg-primary hover:bg-primary/90 text-white" disabled={isSubmitting} data-testid="button-submit">
                 {isSubmitting ? (
                   <>
