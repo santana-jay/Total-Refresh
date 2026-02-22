@@ -11,9 +11,13 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import securityMiddleware from "./security";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Apply security middleware (CORS, Helmet, rate limiting)
+securityMiddleware(app);
 
 // Make the raw request body available (useful for webhook signature checks)
 declare module "http" {
